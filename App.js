@@ -1,21 +1,49 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
+import { Font, AppLoading } from 'expo';
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
-  }
+import Router from './app/config/routes'
+import store from './app/redux/store';
+
+function cacheFonts(fonts) {
+    return fonts.map(font => Font.loadAsync(font));
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default class App extends Component {
+    constructor() {
+        super();
+        this.state = {
+            isReady: false,
+        }
+    }
+
+    async _loadAssetsAsync() {
+        const fontAssets = cacheFonts([
+            {RobotoExtraBold: require('./app/assets/fonts/Roboto-Black.ttf')},
+            {RobotoBold: require('./app/assets/fonts/Roboto-Bold.ttf')},
+            {RobotoMedium: require('./app/assets/fonts/Roboto-Medium.ttf')},
+            {RobotoRegular: require('./app/assets/fonts/Roboto-Regular.ttf')},
+            {RobotoLight: require('./app/assets/fonts/Roboto-Light.ttf')}
+        ]);
+
+        await Promise.all([...fontAssets]);
+    }
+
+    render() {
+        if (!this.state.isReady) {
+            return (
+                <AppLoading
+                    startAsync={this._loadAssetsAsync}
+                    onFinish={() => this.setState({isReady: true})}
+                    onError={console.warn}
+                />
+            );
+        }
+
+        return (
+            <Provider store={store}>
+                <Router/>
+            </Provider>
+        );
+    }
+}
