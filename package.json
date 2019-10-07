@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "expo": "^30.0.1",
     "firebase": "^5.5.5",
     "moment": "^2.22.2",
